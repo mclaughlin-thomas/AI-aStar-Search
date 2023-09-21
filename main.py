@@ -10,11 +10,10 @@ Objective:
     This program implements A*, to find the shortest path from a specified source node to a specified goal node. More specifically,
     A* is applied to the real-world problem (RWP) of finding the shortest path to a user in a video game where edge weight indicates distance
     between nodes/states.
-
 '''
 
 # Given: None
-# Task: Create a TreeNode class to represent nodes in the A* search algorithm.
+# Task: Create nodes to be used in a graph
 # Return: None
 class TreeNode(object):
     def __init__(self, position, parent=None):
