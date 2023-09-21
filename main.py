@@ -1,7 +1,7 @@
 '''
 Aiden Buterbaugh
 Thomas McLaughlin
-CS-255-01
+CS-255-01 INTRODUCTION TO ARTIFICIAL INTELLIGENCE INTELLIGENCE
 
 Project 1
 Due October 11, 2023
