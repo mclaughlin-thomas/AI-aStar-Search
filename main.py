@@ -25,3 +25,4 @@ class TreeNode(object):
 
     def __lt__(self, other):
         return self.f < other.f
+    
