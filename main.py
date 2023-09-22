@@ -11,6 +11,8 @@ Objective:
     A* is applied to the real-world problem (RWP) of finding the shortest path to a user in a video game where edge weight indicates distance
     between nodes/states.
 '''
+import logging 
+# REMOVE ONCE DONE, DO NOT SHIP WITH TESTING TOOLS ;)
 
 # Given: None
 # Task: Create nodes to be used in a graph
@@ -25,3 +27,41 @@ class TreeNode(object):
 
     def __lt__(self, other):
         return self.f < other.f
+
+
+def setParameters():
+    try:
+        width = int(input("Enter the width of the graph: "))
+        height = int(input("Enter the height of the graph: "))
+        
+        is_valid = True if width <= 0 or height <= 0 else False
+        if is_valid is True:
+            print("Number too small. Try again.\n\n")
+            setParameters()
+
+        logging.info("width height:",width," ",height)
+        return width, height
+    except ValueError:
+        print("Invalid input. Please enter valid integers.")
+        return setParameters()  # calls fcn again if user inputs data wrong
+
+def CreateVirtualWorld(width, height):
+    print("Create graph here")
+    try:
+        world = [[0 for _ in range(height)] for _ in range(width)] #graph is made here
+        return world
+    except MemoryError:
+        print("Could not allocate sufficient space you punk")
+        exit
+    except Exception as e:
+        print("An exception occurred: ", e)
+        exit
+
+def main():
+    width, height = setParameters()
+    print("Width entered: ", width, "\nHeight entered: ", height)
+    world = CreateVirtualWorld(width, height)
+    print (world)  
+
+if __name__=="__main__":
+    main()
