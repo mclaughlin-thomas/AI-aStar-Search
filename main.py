@@ -7,7 +7,7 @@ Project 1
 Due October 11, 2023
 
 Objective:
-    This program implements A*, to find the shortest path from a specified source node to a specified goal node. More specifically,
+    This program implements A*, to find the shortest path from a specified source node to a specified goal node. More specifically here,
     A* is applied to the real-world problem (RWP) of finding the shortest path to a user in a video game where edge weight indicates distance
     between nodes/states.
 '''
