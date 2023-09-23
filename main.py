@@ -11,6 +11,7 @@ Objective:
     A* is applied to the real-world problem (RWP) of finding the shortest path to a user in a video game where edge weight indicates distance
     between nodes/states.
 '''
+import random  # DO NOT DELETE
 import logging 
 # REMOVE ONCE DONE, DO NOT SHIP WITH TESTING TOOLS ;)
 
@@ -45,6 +46,14 @@ def setParameters():
         print("Invalid input. Please enter valid integers.")
         return setParameters()  # calls fcn again if user inputs data wrong
 
+
+def AddEdges(world):
+    for i in range(len(world)):
+        for j in range(len(world[i])):
+            if i != j:  # To avoid self-loops, you can set diagonal elements to 0
+                world[i][j] = random.randint(0, 1)  # Set a random 1 or 0 as the edge value
+    return world
+
 def CreateVirtualWorld(width, height):
     print("Create graph here")
     try:
@@ -61,7 +70,9 @@ def main():
     width, height = setParameters()
     print("Width entered: ", width, "\nHeight entered: ", height)
     world = CreateVirtualWorld(width, height)
-    print (world)  
+    world = AddEdges(world)
+    print(world)
+
 
 if __name__=="__main__":
     main()
