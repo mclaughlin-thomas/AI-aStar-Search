@@ -54,7 +54,7 @@ def AddEdges(world):
                 world[i][j] = random.randint(0, 1)  # Set a random 1 or 0 as the edge value
     return world
 
-def CreateVirtualWorld(width, height):
+def CreateGraph(width, height):
     print("Create graph here")
     try:
         world = [[0 for _ in range(height)] for _ in range(width)] #graph is made here
@@ -66,10 +66,19 @@ def CreateVirtualWorld(width, height):
         print("An exception occurred: ", e)
         exit
 
+
+
+
+
+
+
+
+
+
 def main():
     width, height = setParameters()
     print("Width entered: ", width, "\nHeight entered: ", height)
-    world = CreateVirtualWorld(width, height)
+    world = CreateGraph(width, height)
     world = AddEdges(world)
     print(world)
 
