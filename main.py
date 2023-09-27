@@ -34,17 +34,11 @@ import logging  # REMOVE ONCE DONE, DO NOT SHIP WITH TESTING TOOLS ;)
 # Given: None
 # Task: Create nodes to be used in a graph
 # Return: None
-class TreeNode(object):
-    def __init__(self, parent=None, position=None):
-        self.parent = parent
-        self.position = position
-
+class Node(object):
+    def __init__(self):
         self.g = 0
         self.h = 0
         self.f = 0
-
-    def __eq__(self, other):
-        return self.position == other.position
 
 
 def setParameters():
@@ -141,11 +135,6 @@ def astar(grid, start, end):
             # Add the child to the open list
             open_list.append(child)
 
-
-def printMatrix(matrix):
-    for row in matrix:
-        print(" ".join(map(str, row)))
-
 def addObstacles(matrix ,obstacle_percentage):
     if obstacle_percentage < 0 or obstacle_percentage > 100:
         raise ValueError("Obstacle percentage should be between 0 and 100.")
@@ -171,22 +160,35 @@ def userGeneratedInput():
     new_tuple = dummy_tuple +(x,y,)
     return new_tuple
 
+def createSpace(width, height):
+    space = [0] * width
+
+    for i in range(width):
+        space[i] = [0] * height
+
+    for i in range(width):
+        for j in range(height):
+            node = Node()
+            space[i][j] = node
+    return space
+
 def main():
     width, height = setParameters()
-    space = [[0 for _ in range(width)] for _ in range(height)]
-    addObstacles(space , obstacle_percentage=20)
+    space = createSpace(width, height)
     printMatrix(space)
+    
 
-    start = userGeneratedInput()
-    print(start)
-    end = userGeneratedInput()
-    print(end)
+    # addObstacles(space , obstacle_percentage=20)
+    # start = userGeneratedInput()
+    # print(start)
+    # end = userGeneratedInput()
+    # print(end)
 
-    path = astar(space, start, end)
-    if path:
-        print("Path found:", path)
-    else:
-        print("No path found")
+    # path = astar(space, start, end)
+    # if path:
+    #     print("Path found:", path)
+    # else:
+    #     print("No path found")
 
 if __name__=="__main__":
     main()
