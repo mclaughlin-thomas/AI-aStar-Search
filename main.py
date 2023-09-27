@@ -164,14 +164,23 @@ def addObstacles(matrix ,obstacle_percentage):
     for row, col in obstacle_positions:
         matrix[row][col] = 1
 
+def userGeneratedInput():
+    dummy_tuple:int = ()
+    x = int(input())
+    y = int(input())
+    new_tuple = dummy_tuple +(x,y,)
+    return new_tuple
+
 def main():
     width, height = setParameters()
     space = [[0 for _ in range(width)] for _ in range(height)]
     addObstacles(space , obstacle_percentage=20)
     printMatrix(space)
 
-    start = (0, 0)
-    end = (9, 9)
+    start = userGeneratedInput()
+    print(start)
+    end = userGeneratedInput()
+    print(end)
 
     path = astar(space, start, end)
     if path:
