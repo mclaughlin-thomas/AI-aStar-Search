@@ -12,6 +12,7 @@ Objective:
     between nodes/states.
 '''
 import random  # DO NOT DELETE
+import heapq
 import logging 
 # REMOVE ONCE DONE, DO NOT SHIP WITH TESTING TOOLS ;)
 
@@ -49,9 +50,11 @@ def setParameters():
 
 def AddEdges(world):
     for i in range(len(world)):
-        for j in range(len(world[i])):
+        for j in range(i + 1, len(world[i])):
             if i != j:  # To avoid self-loops, you can set diagonal elements to 0
-                world[i][j] = random.randint(0, 1)  # Set a random 1 or 0 as the edge value
+                edge_value = random.randint(0, 1)  # Set a random 1 or 0 as the edge value
+                world[i][j] = edge_value
+                world[j][i] = edge_value  # Ensure symmetry for undirected graph
     return world
 
 def CreateGraph(width, height):
@@ -65,7 +68,6 @@ def CreateGraph(width, height):
     except Exception as e:
         print("An exception occurred: ", e)
         exit
-
 
 
 
