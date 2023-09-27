@@ -56,7 +56,6 @@ def AddEdges(world):
                 world[i][j] = edge_value
                 world[j][i] = edge_value  # Ensure symmetry for undirected graph
     return world
-
 def CreateGraph(width, height):
     print("Create graph here")
     try:
@@ -68,10 +67,11 @@ def CreateGraph(width, height):
     except Exception as e:
         print("An exception occurred: ", e)
         exit
+def random_start_end(width, height):
+    start = (random.randint(0, width - 1), random.randint(0, height - 1))
+    end = (random.randint(0, width - 1), random.randint(0, height - 1))
 
-
-
-
+    return start, end
 
 
 
