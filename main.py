@@ -34,7 +34,12 @@ class Node(object):
         if random.randint(1, 100) < 10:
             self.wall = True
 
-    def __addNeighbors__(self, grid,width, height):
+    def add_neighbors(self, grid,width, height):
+        """
+        Given: None
+        Task: Create nodes to be used in a graph
+        Return: None
+        """
         i = self.i
         j = self.j
         if i < width-1 :
@@ -56,7 +61,7 @@ class Node(object):
             self.neighbors.append(grid[i+1][j+1])
 
 
-def setParameters():
+def set_parameters():
     """
     Given: None
     Task: Create nodes to be used in a graph
@@ -69,14 +74,14 @@ def setParameters():
         is_valid = True if width <= 0 or height <= 0 else False
         if is_valid is True:
             print("Number too small. Try again.\n\n")
-            setParameters()
+            set_parameters()
         return width, height
     except ValueError:
         print("Invalid input. Please enter valid integers.")
-        return setParameters()  # calls fcn again if user inputs data wrong
+        return set_parameters()  # calls fcn again if user inputs data wrong
 
 
-def userGeneratedInput():
+def user_generated_input():
     """
     Given: None
     Task: Create nodes to be used in a graph
@@ -89,7 +94,7 @@ def userGeneratedInput():
     return new_tuple
 
 
-def createSpace(width, height):
+def create_space(width, height):
     """
     Given: None
     Task: Create nodes to be used in a graph
@@ -107,11 +112,11 @@ def createSpace(width, height):
 
     for i in range(width): #initializing every node's neighbors
         for j in range(height):
-            space[i][j].__addNeighbors__(space, width, height)
+            space[i][j].add_neighbors(space, width, height)
     return space
 
 
-def removeFromArray (array, element):
+def remove_from_array (array, element):
     """
     Given: None
     Task: Create nodes to be used in a graph
@@ -122,7 +127,7 @@ def removeFromArray (array, element):
             array.pop(i)
 
 
-def heuristic (a,b):
+def heuristic(node_one, node_two):
     """
     Given: None
     Task: Create nodes to be used in a graph
@@ -130,7 +135,7 @@ def heuristic (a,b):
     """
     # distance = math.dist((a.i, a.j), (b.i, b.j)) #euclidian distance, if ur feelin it ig
     # USE THIS IF U WANT TO ENABLE DIAGONAL
-    distance = abs(a.i-b.i) + abs(a.j-b.j)
+    distance = abs(node_one.i-node_two.i) + abs(node_one.j-node_two.j)
     return distance
 
 
@@ -171,7 +176,7 @@ def astar(start_space, end_space):
             print("\n Done")
             # Print the coordinates of the node
             return path
-        removeFromArray(open_set, current)
+        remove_from_array(open_set, current)
         closed_set.append(current)
 
         neighbors = current.neighbors
@@ -210,8 +215,8 @@ def main():
     Task: Create nodes to be used in a graph
     Return: None
     """
-    width, height = setParameters()
-    space = createSpace(width, height)
+    width, height = set_parameters()
+    space = create_space(width, height)
     start_space = space[0][0]
     end_space = space[width-1][height-1]
     start_space.wall = False
