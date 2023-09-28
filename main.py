@@ -7,13 +7,12 @@ Project 1
 Due October 11, 2023
 
 Objective:
-    This program implements A*, to find the shortest path from a specified source node to a specified goal node. More specifically here,
-    A* is applied to the real-world problem (RWP) of finding the shortest path to a user in a video game where edge weight indicates distance
-    between nodes/states.
+    This program implements A*, to find the shortest path from a specified source node to a specified
+    goal node. More specifically here, A* is applied to the real-world problem (RWP) of finding the shortest path to a user
+    in a video game where edge weight indicates distance between nodes/states.
 '''
-import random  
-            #Add table or 2d matrix for distance or g value. Put that in neighbor function. Right now, it is all determined in the astar fcn in the neighbor section
-
+import random
+           
 # Given: None
 # Task: Create nodes to be used in a graph
 # Return: None
@@ -105,7 +104,7 @@ def heuristic (a,b):
     return distance
 
 
-def astar(space, startSpace, endSpace):
+def astar(startSpace, endSpace):
     path = []
     open_set = []
     closed_set = []
@@ -177,7 +176,7 @@ def main():
     startSpace.wall = False
     endSpace.wall = False
     #endSpace = space[0][4]
-    path = astar(space, startSpace, endSpace)
+    path = astar(startSpace, endSpace)
    
     if path:
         print("Path:")
@@ -189,4 +188,3 @@ def main():
 
 if __name__=="__main__":
     main()
-    
