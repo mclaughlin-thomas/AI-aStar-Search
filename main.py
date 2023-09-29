@@ -31,7 +31,7 @@ class Node(object):
         self.previous = None
         self.wall = False
 
-        if random.randint(1, 100) < 10:
+        if random.randint(1, 100) < 30:
             self.wall = True
 
     def add_neighbors(self, grid,width, height):
@@ -101,19 +101,29 @@ def create_space(width, height):
     Return: None
     """
     space = [0] * width
+    adjacency = {} #NEW---------------------------
 
-    for i in range(width): # entire space filled with 0's
+
+    for i in range(width): # entire space filled with 0's (No obstacles)
         space[i] = [0] * height
 
     for i in range(width): # entire space filled with Nodes as well
         for j in range(height):
             node = Node(i,j)
             space[i][j] = node
+            adjacency[(i, j)] = [] #NEW---------------------------
 
     for i in range(width): #initializing every node's neighbors
         for j in range(height):
             space[i][j].add_neighbors(space, width, height)
-    return space
+
+    for i in range(width):  # initializing every node's neighbors #NEW---------------------------
+        for j in range(height): #NEW---------------------------
+            node = space[i][j] #NEW---------------------------
+            for neighbor in node.neighbors: #NEW---------------------------
+                adjacency[(i, j)].append(((neighbor.i, neighbor.j), 2))  # Assuming a cost of 1 for all neighbors #NEW---------------------------
+
+    return space, adjacency
 
 
 def remove_from_array (array, element):
@@ -139,7 +149,7 @@ def heuristic(node_one, node_two):
     return distance
 
 
-def astar(start_space, end_space):
+def astar(start_space, end_space, adjacency):
     """
     Given: None
     Task: Create nodes to be used in a graph
@@ -156,13 +166,13 @@ def astar(start_space, end_space):
     while open_set:  # This loop will continue as long as openSet is not empty
         winner = 0
 
-        for i in range(len(open_set)):
+        for i in range(len(open_set)): # Janky priority Queue | Room for improvement
             if open_set[i].f < open_set[winner].f:
                 winner = i
 
         current = open_set[winner]
         print("Cur node's vals")
-        print(current.f," ",current.h," ",current.g," ")###
+        print(current.f,"<-f ",current.h,"<-h",current.g,"<-g")###
         print("\n")
 
         if current == end_space:
@@ -187,7 +197,16 @@ def astar(start_space, end_space):
             # little search inside a search del me later
             # IF ITS A NEIGHBOR thats not in the closed set del me later
             if neighbor not in closed_set and not neighbor.wall:
-                temp_g = current.g +1 #
+                 # Fetch the cost from the adjacency list based on the current and neighbor coordinates
+                cost = None
+                for neighbor_coord, c in adjacency[(current.i, current.j)]:
+                    if neighbor_coord == (neighbor.i, neighbor.j):
+                        cost = c
+                        break
+
+                if cost is not None:
+                    temp_g = current.g + cost  # Add the cost from the adjacency list
+
 
                 new_path = False
                 if neighbor in open_set:
@@ -216,13 +235,13 @@ def main():
     Return: None
     """
     width, height = set_parameters()
-    space = create_space(width, height)
+    space, adjacency = create_space(width, height)
     start_space = space[0][0]
     end_space = space[width-1][height-1]
     start_space.wall = False
     end_space.wall = False
     #end_space = space[0][4]
-    path = astar(start_space, end_space)
+    path = astar(start_space, end_space, adjacency)
 
     if path:
         print("Path:")
