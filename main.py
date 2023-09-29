@@ -22,16 +22,16 @@ class Node(object):
     Return: None
     """
     def __init__(self, i, j):
-        self.g = 0
-        self.h = 0
-        self.f = 0
+        self.gval = 0
+        self.hval = 0
+        self.fval = 0
         self.i = i
         self.j = j
         self.neighbors = []
         self.previous = None
         self.wall = False
 
-        if random.randint(1, 100) < 30:
+        if random.randint(1, 100) < 0:
             self.wall = True
 
     def add_neighbors(self, grid,width, height):
@@ -88,9 +88,9 @@ def user_generated_input():
     Return: None
     """
     dummy_tuple:int = ()
-    x = int(input())
-    y = int(input())
-    new_tuple = dummy_tuple +(x,y,)
+    input_one = int(input())
+    input_two = int(input())
+    new_tuple = dummy_tuple +(input_one,input_two,)
     return new_tuple
 
 
@@ -121,7 +121,7 @@ def create_space(width, height):
         for j in range(height): #NEW---------------------------
             node = space[i][j] #NEW---------------------------
             for neighbor in node.neighbors: #NEW---------------------------
-                adjacency[(i, j)].append(((neighbor.i, neighbor.j), 2))  # Assuming a cost of 1 for all neighbors #NEW---------------------------
+                adjacency[(i, j)].append(((neighbor.i, neighbor.j), 1))  # PUT G COST HERE #NEW
 
     return space, adjacency
 
@@ -167,12 +167,12 @@ def astar(start_space, end_space, adjacency):
         winner = 0
 
         for i in range(len(open_set)): # Janky priority Queue | Room for improvement
-            if open_set[i].f < open_set[winner].f:
+            if open_set[i].fval < open_set[winner].fval:
                 winner = i
 
         current = open_set[winner]
         print("Cur node's vals")
-        print(current.f,"<-f ",current.h,"<-h",current.g,"<-g")###
+        print(current.fval,"<-f ",current.hval,"<-h",current.gval,"<-g")###
         print("\n")
 
         if current == end_space:
@@ -197,31 +197,31 @@ def astar(start_space, end_space, adjacency):
             # little search inside a search del me later
             # IF ITS A NEIGHBOR thats not in the closed set del me later
             if neighbor not in closed_set and not neighbor.wall:
-                 # Fetch the cost from the adjacency list based on the current and neighbor coordinates
+                 #Get the cost from the adjacency list based on the current and neighbor coordinates
                 cost = None
-                for neighbor_coord, c in adjacency[(current.i, current.j)]:
+                for neighbor_coord, adjacency_cost in adjacency[(current.i, current.j)]:
                     if neighbor_coord == (neighbor.i, neighbor.j):
-                        cost = c
+                        cost = adjacency_cost
                         break
 
                 if cost is not None:
-                    temp_g = current.g + cost  # Add the cost from the adjacency list
+                    temp_g = current.gval + cost  # Add the cost from the adjacency list
 
 
                 new_path = False
                 if neighbor in open_set:
-                    if temp_g<neighbor.g:
-                        neighbor.g = temp_g
+                    if temp_g<neighbor.gval:
+                        neighbor.gval = temp_g
                         new_path = True
                 else:
-                    neighbor.g = temp_g
+                    neighbor.gval = temp_g
                     new_path = True
                     open_set.append(neighbor)
 
                 #heuristics
                 if new_path:
-                    neighbor.h = heuristic(neighbor, end_space)
-                    neighbor.f = neighbor.g + neighbor.h
+                    neighbor.hval = heuristic(neighbor, end_space)
+                    neighbor.fval = neighbor.gval + neighbor.hval
                     neighbor.previous = current
 
     print("No solution")
@@ -240,7 +240,6 @@ def main():
     end_space = space[width-1][height-1]
     start_space.wall = False
     end_space.wall = False
-    #end_space = space[0][4]
     path = astar(start_space, end_space, adjacency)
 
     if path:
