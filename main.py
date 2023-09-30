@@ -13,6 +13,7 @@ Objective:
     in a video game where edge weight indicates distance between nodes/states.
 '''
 import random
+import time
 
 
 class Node(object):
@@ -25,13 +26,13 @@ class Node(object):
         self.gval = 0
         self.hval = 0
         self.fval = 0
-        self.i = i
-        self.j = j
+        self.ival = i
+        self.jval = j
         self.neighbors = []
         self.previous = None
         self.wall = False
 
-        if random.randint(1, 100) < 0:
+        if random.randint(1, 100) < 10:
             self.wall = True
 
     def add_neighbors(self, grid,width, height):
@@ -40,8 +41,8 @@ class Node(object):
         Task: Create nodes to be used in a graph
         Return: None
         """
-        i = self.i
-        j = self.j
+        i = self.ival
+        j = self.jval
         if i < width-1 :
             self.neighbors.append(grid[i+1][j])
         if i > 0:
@@ -121,7 +122,7 @@ def create_space(width, height):
         for j in range(height): #NEW---------------------------
             node = space[i][j] #NEW---------------------------
             for neighbor in node.neighbors: #NEW---------------------------
-                adjacency[(i, j)].append(((neighbor.i, neighbor.j), 1))  # PUT G COST HERE #NEW
+                adjacency[(i, j)].append(((neighbor.ival, neighbor.jval), 1)) # PUT G COST HERE #NEW
 
     return space, adjacency
 
@@ -145,7 +146,7 @@ def heuristic(node_one, node_two):
     """
     # distance = math.dist((a.i, a.j), (b.i, b.j)) #euclidian distance, if ur feelin it ig
     # USE THIS IF U WANT TO ENABLE DIAGONAL
-    distance = abs(node_one.i-node_two.i) + abs(node_one.j-node_two.j)
+    distance = abs(node_one.ival-node_two.ival) + abs(node_one.jval-node_two.jval)
     return distance
 
 
@@ -199,8 +200,8 @@ def astar(start_space, end_space, adjacency):
             if neighbor not in closed_set and not neighbor.wall:
                  #Get the cost from the adjacency list based on the current and neighbor coordinates
                 cost = None
-                for neighbor_coord, adjacency_cost in adjacency[(current.i, current.j)]:
-                    if neighbor_coord == (neighbor.i, neighbor.j):
+                for neighbor_coord, adjacency_cost in adjacency[(current.ival, current.jval)]:
+                    if neighbor_coord == (neighbor.ival, neighbor.jval):
                         cost = adjacency_cost
                         break
 
@@ -227,6 +228,15 @@ def astar(start_space, end_space, adjacency):
     print("No solution")
     return
 
+def save_data(elapsed_time):
+    """
+    Given: None
+    Task: Create nodes to be used in a graph
+    Return: None
+    """
+    document = open("AI-Project1/algo_data.txt", "a", encoding="utf-8")
+    document.write(f"{elapsed_time}\n") # had to make it one argument
+    document.close()
 
 def main():
     """
@@ -240,14 +250,23 @@ def main():
     end_space = space[width-1][height-1]
     start_space.wall = False
     end_space.wall = False
+
+    start_time = time.time()
     path = astar(start_space, end_space, adjacency)
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    save_data(elapsed_time)
 
     if path:
         print("Path:")
         for node in reversed(path):
-            print(f"({node.i}, {node.j})")
+            print(f"({node.ival}, {node.jval})")
     else:
         print("No path found")
+
+
+    elapsed_time = end_time - start_time
+    save_data(elapsed_time)
 
 
 if __name__=="__main__":
