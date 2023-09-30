@@ -224,9 +224,9 @@ def astar(start_space, end_space, adjacency):
                     neighbor.hval = heuristic(neighbor, end_space)
                     neighbor.fval = neighbor.gval + neighbor.hval
                     neighbor.previous = current
-
     print("No solution")
     return
+
 
 def save_data(elapsed_time):
     """
@@ -237,6 +237,7 @@ def save_data(elapsed_time):
     document = open("AI-Project1/algo_data.txt", "a", encoding="utf-8")
     document.write(f"{elapsed_time}\n") # had to make it one argument
     document.close()
+
 
 def main():
     """
