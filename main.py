@@ -160,7 +160,6 @@ def astar(start_space, end_space, adjacency):
     open_set = []
     closed_set = []
 
-
     open_set.append(start_space)
 
 
@@ -224,6 +223,7 @@ def astar(start_space, end_space, adjacency):
                     neighbor.hval = heuristic(neighbor, end_space)
                     neighbor.fval = neighbor.gval + neighbor.hval
                     neighbor.previous = current
+
     print("No solution")
     return
 
@@ -237,8 +237,8 @@ def save_data(path, space, adjacency, i):
     # document = open("AI-Project1/algo_data.txt", "a", encoding="utf-8")
     # document.write(f"{elapsed_time}\n") # had to make it one argument
     # document.close()
-    file_path_results = "AI-Project1\Manhattan Data\ZEROWALLONEHUNDRED\data.csv"
-    file_path_adjtable = "AI-Project1\Manhattan Data\ZEROWALLONEHUNDRED\Adjtable.csv"
+    file_path_results = "AI-Project1\Manhattan Data\ZEROWALLTWELVETHOUSAND\data.csv"
+    file_path_adjtable = "AI-Project1\Manhattan Data\ZEROWALLTWELVETHOUSAND\Adjtable.csv"
     matrix_str = repr(adjacency)
 
     with open(file_path_results, mode='w', newline='', encoding='utf-8') as file:
@@ -266,7 +266,9 @@ def main():
     start_space.wall = False
     end_space.wall = False
 
+    print("Starting search")
     path = astar(start_space, end_space, adjacency)
+    print("Ending search")
 
     if path:
         print("Path:")
@@ -274,7 +276,7 @@ def main():
         for node in reversed(path):
             print(f"({node.ival}, {node.jval})")
             i=i+1
-        save_data(path, space, adjacency, i)
+        #save_data(path, space, adjacency, i)
     else:
         print("No path found")
 
