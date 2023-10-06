@@ -13,7 +13,7 @@ Objective:
     in a video game where edge weight indicates distance between nodes/states.
 '''
 import random
-import time
+import csv
 
 
 class Node(object):
@@ -32,7 +32,7 @@ class Node(object):
         self.previous = None
         self.wall = False
 
-        if random.randint(1, 100) < 10:
+        if random.randint(1, 100) < -1:
             self.wall = True
 
     def add_neighbors(self, grid,width, height):
@@ -146,7 +146,7 @@ def heuristic(node_one, node_two):
     """
     # distance = math.dist((a.i, a.j), (b.i, b.j)) #euclidian distance, if ur feelin it ig
     # USE THIS IF U WANT TO ENABLE DIAGONAL
-    distance = abs(node_one.ival-node_two.ival) + abs(node_one.jval-node_two.jval)
+    distance = abs(node_one.ival-node_two.ival) + abs(node_one.jval-node_two.jval) #manhattan
     return distance
 
 
@@ -228,15 +228,29 @@ def astar(start_space, end_space, adjacency):
     return
 
 
-def save_data(elapsed_time):
+def save_data(path, space, adjacency, i):
     """
     Given: None
     Task: Create nodes to be used in a graph
     Return: None
     """
-    document = open("AI-Project1/algo_data.txt", "a", encoding="utf-8")
-    document.write(f"{elapsed_time}\n") # had to make it one argument
-    document.close()
+    # document = open("AI-Project1/algo_data.txt", "a", encoding="utf-8")
+    # document.write(f"{elapsed_time}\n") # had to make it one argument
+    # document.close()
+    file_path_results = "AI-Project1\Manhattan Data\ZEROWALLONEHUNDRED\data.csv"
+    file_path_adjtable = "AI-Project1\Manhattan Data\ZEROWALLONEHUNDRED\Adjtable.csv"
+    matrix_str = repr(adjacency)
+
+    with open(file_path_results, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        # Use writerow to write the header (if any) and data rows
+        for node in reversed(path):
+            writer.writerow([node.ival, node.jval])
+        writer.writerow(["total states(including start and goal)", i])
+    with open(file_path_adjtable, mode='w') as file:
+        file.write(matrix_str)
+
+
 
 
 def main():
@@ -252,23 +266,17 @@ def main():
     start_space.wall = False
     end_space.wall = False
 
-    start_time = time.time()
     path = astar(start_space, end_space, adjacency)
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    save_data(elapsed_time)
 
     if path:
         print("Path:")
+        i =0
         for node in reversed(path):
             print(f"({node.ival}, {node.jval})")
+            i=i+1
+        save_data(path, space, adjacency, i)
     else:
         print("No path found")
-
-
-    elapsed_time = end_time - start_time
-    save_data(elapsed_time)
-
 
 if __name__=="__main__":
     main()
