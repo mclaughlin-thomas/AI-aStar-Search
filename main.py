@@ -14,6 +14,9 @@ Objective:
 '''
 import random
 import csv
+import gc
+import time
+import math
 
 
 class Node(object):
@@ -52,14 +55,14 @@ class Node(object):
         if j>0:
             self.neighbors.append(grid[i][j-1])
         #DIAGONALS
-        if i> 0 and j>0:
-            self.neighbors.append(grid[i-1][j-1])
-        if i < width -1 and j>0:
-            self.neighbors.append(grid[i+1][j-1])
-        if i > 0 and j> height -1:
-            self.neighbors.append(grid[i-1][j+1])
-        if i < width-1 and j < height-1:
-            self.neighbors.append(grid[i+1][j+1])
+        # if i> 0 and j>0:
+        #     self.neighbors.append(grid[i-1][j-1])
+        # if i < width -1 and j>0:
+        #     self.neighbors.append(grid[i+1][j-1])
+        # if i > 0 and j> height -1:
+        #     self.neighbors.append(grid[i-1][j+1])
+        # if i < width-1 and j < height-1:
+        #     self.neighbors.append(grid[i+1][j+1])
 
 
 def set_parameters():
@@ -102,27 +105,39 @@ def create_space(width, height):
     Return: None
     """
     space = [0] * width
-    adjacency = {} #NEW---------------------------
+    adjacency = {} 
 
 
     for i in range(width): # entire space filled with 0's (No obstacles)
         space[i] = [0] * height
+    print("Completed 0's\n")
+    gc.collect()
 
     for i in range(width): # entire space filled with Nodes as well
         for j in range(height):
             node = Node(i,j)
             space[i][j] = node
-            adjacency[(i, j)] = [] #NEW---------------------------
+            adjacency[(i, j)] = []
+    print("Completed filling with nodes\n")
+    gc.collect()
 
     for i in range(width): #initializing every node's neighbors
         for j in range(height):
             space[i][j].add_neighbors(space, width, height)
+            #gc.collect()
 
-    for i in range(width):  # initializing every node's neighbors #NEW---------------------------
-        for j in range(height): #NEW---------------------------
-            node = space[i][j] #NEW---------------------------
-            for neighbor in node.neighbors: #NEW---------------------------
+    print("Completed init neighbors's\n")
+    gc.collect()
+
+    for i in range(width):  # initializing every node's neighbors
+        for j in range(height): 
+            node = space[i][j] 
+            for neighbor in node.neighbors: 
                 adjacency[(i, j)].append(((neighbor.ival, neighbor.jval), 1)) # PUT G COST HERE #NEW
+                #gc.collect()
+
+    print("Completed adj's\n")
+    gc.collect()
 
     return space, adjacency
 
@@ -144,9 +159,9 @@ def heuristic(node_one, node_two):
     Task: Create nodes to be used in a graph
     Return: None
     """
-    # distance = math.dist((a.i, a.j), (b.i, b.j)) #euclidian distance, if ur feelin it ig
+    distance = math.dist((node_one.ival, node_one.jval), (node_two.ival, node_two.jval)) #euclidian distance, if ur feelin it ig
     # USE THIS IF U WANT TO ENABLE DIAGONAL
-    distance = abs(node_one.ival-node_two.ival) + abs(node_one.jval-node_two.jval) #manhattan
+    #distance = abs(node_one.ival-node_two.ival) + abs(node_one.jval-node_two.jval) #manhattan
     return distance
 
 
@@ -228,18 +243,22 @@ def astar(start_space, end_space, adjacency):
     return
 
 
-def save_data(path, space, adjacency, i):
+def save_data(path, space, adjacency, i, total_time):
     """
     Given: None
     Task: Create nodes to be used in a graph
-    Return: None
+    Return: Nonep
     """
     # document = open("AI-Project1/algo_data.txt", "a", encoding="utf-8")
     # document.write(f"{elapsed_time}\n") # had to make it one argument
     # document.close()
-    file_path_results = "AI-Project1\Manhattan Data\ZEROWALLTWELVETHOUSAND\data.csv"
-    file_path_adjtable = "AI-Project1\Manhattan Data\ZEROWALLTWELVETHOUSAND\Adjtable.csv"
-    matrix_str = repr(adjacency)
+    #file_path_results = "AI-Project1\Manhattan Data\ZEROWALLTWELVETHOUSAND\data.csv"
+    file_path_results = "C:\\Users\Handrail\Desktop\Euclidean Data.NODIAG\ZEROWALLONETHOUSAND\data.csv"
+    #file_path_adjtable = "C:\\Users\Handrail\Desktop\Manhattan Data\ZEROWALLFOURTHOUSAND\Adjtable.csv"
+    #file_path_space = "C:\\Users\Handrail\Desktop\Manhattan Data\ZEROWALLFOURTHOUSAND\Space.csv"
+    # adj_str = repr(adjacency)
+    # space_str = repr(space)
+
 
     with open(file_path_results, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
@@ -247,8 +266,13 @@ def save_data(path, space, adjacency, i):
         for node in reversed(path):
             writer.writerow([node.ival, node.jval])
         writer.writerow(["total states(including start and goal)", i])
-    with open(file_path_adjtable, mode='w') as file:
-        file.write(matrix_str)
+        writer.writerow(["Time for Astar", total_time])
+
+    # with open(file_path_adjtable, mode='w', encoding='utf-8') as file:
+    #     file.write(adj_str)
+
+    # with open(file_path_space, mode='w', encoding='utf-8') as file:
+    #     file.write(space_str)
 
 
 
@@ -266,9 +290,14 @@ def main():
     start_space.wall = False
     end_space.wall = False
 
+
     print("Starting search")
+    start = time.time() # Start Timer
     path = astar(start_space, end_space, adjacency)
+    end =  time.time() # End Timer
+    total_time= end - start
     print("Ending search")
+
 
     if path:
         print("Path:")
@@ -276,9 +305,75 @@ def main():
         for node in reversed(path):
             print(f"({node.ival}, {node.jval})")
             i=i+1
-        #save_data(path, space, adjacency, i)
+        save_data(path, space, adjacency, i, total_time)
     else:
         print("No path found")
 
 if __name__=="__main__":
     main()
+
+
+
+# TRIED AND TRUE
+
+# CREATE create_space
+# """
+#     Given: None
+#     Task: Create nodes to be used in a graph
+#     Return: None
+#     """
+#     space = [0] * width
+#     adjacency = {} #NEW---------------------------
+
+
+#     for i in range(width): # entire space filled with 0's (No obstacles)
+#         space[i] = [0] * height
+#     print("Completed 0's\n")
+
+#     for i in range(width): # entire space filled with Nodes as well
+#         for j in range(height):
+#             node = Node(i,j)
+#             space[i][j] = node
+#             adjacency[(i, j)] = [] #NEW---------------------------
+#     print("Completed filling with nodes\n")
+
+#     for i in range(width): #initializing every node's neighbors
+#         for j in range(height):
+#             space[i][j].add_neighbors(space, width, height)
+#     print("Completed init neighbors's\n")
+    
+#     for i in range(width):  # initializing every node's neighbors #NEW---------------------------
+#         for j in range(height): #NEW---------------------------
+#             node = space[i][j] #NEW---------------------------
+#             for neighbor in node.neighbors: #NEW---------------------------
+#                 adjacency[(i, j)].append(((neighbor.ival, neighbor.jval), 1)) # PUT G COST HERE #NEW
+#     print("Completed adj's\n")
+#     return space, adjacency
+
+
+# MAIN
+#         """
+#     Given: None
+#     Task: Create nodes to be used in a graph
+#     Return: None
+#     """
+#     width, height = set_parameters()
+#     space, adjacency = create_space(width, height)
+#     start_space = space[0][0]
+#     end_space = space[width-1][height-1]
+#     start_space.wall = False
+#     end_space.wall = False
+
+#     print("Starting search")
+#     path = astar(start_space, end_space, adjacency)
+#     print("Ending search")
+
+#     if path:
+#         print("Path:")
+#         i =0
+#         for node in reversed(path):
+#             print(f"({node.ival}, {node.jval})")
+#             i=i+1
+#         #save_data(path, space, adjacency, i)
+#     else:
+#         print("No path found")
