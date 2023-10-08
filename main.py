@@ -56,14 +56,14 @@ class Node(object):
         if y>0:
             self.neighbors.append(grid[x][y-1])
         #DIAGONALS
-        if x> 0 and y>0:
-            self.neighbors.append(grid[x-1][y-1])
-        if x < width -1 and y>0:
-            self.neighbors.append(grid[x+1][y-1])
-        if x > 0 and y> height -1:
-            self.neighbors.append(grid[x-1][y+1])
-        if x < width-1 and y < height-1:
-            self.neighbors.append(grid[x+1][y+1])
+        # if x> 0 and y>0:
+        #     self.neighbors.append(grid[x-1][y-1])
+        # if x < width -1 and y>0:
+        #     self.neighbors.append(grid[x+1][y-1])
+        # if x > 0 and y> height -1:
+        #     self.neighbors.append(grid[x-1][y+1])
+        # if x < width-1 and y < height-1:
+        #     self.neighbors.append(grid[x+1][y+1])
     def __lt__(self, other):
         return self.fval < other.fval
 
@@ -126,6 +126,7 @@ def heuristic_euclidean(node_one, node_two):
     dx = node_one.xval - node_two.xval
     dy = node_one.yval - node_two.yval
     return math.sqrt(dx * dx + dy * dy)
+
 
 def reconstruct_path(came_from, start, goal):
     current = goal
@@ -246,7 +247,7 @@ def save_data_euclidean(path, i, total_time, node_count):
     Return: Nonep
     """
     #file_path_results = "AI-Project1\Manhattan Data\ZEROWALLTWELVETHOUSAND\data.csv"
-    file_path_results = "C:\\Users\Handrail\Desktop\Euclidean Data.NODIAG\ZEROWALLTEN\data.csv"
+    file_path_results = "C:\\Users\Handrail\Documents\Project 1\Euclidean\hNoWalls\hNoDiag\h4000\data.csv"
     #file_path_adjtable = "C:\\Users\Handrail\Desktop\Manhattan Data\ZEROWALLFOURTHOUSAND\Adjtable.csv"
     
 
@@ -266,7 +267,7 @@ def save_data_manhattan(path, i, total_time, node_count):
     Return: Nonep
     """
     #file_path_results = "AI-Project1\Manhattan Data\ZEROWALLTWELVETHOUSAND\data.csv"
-    file_path_results = "C:\\Users\Handrail\Desktop\Euclidean Data.NODIAG\ZEROWALLTWOTHOUSAND\data.csv"
+    file_path_results = "C:\\Users\Handrail\Documents\Project 1\Manhattan\hNoWalls\hNoDiag\h4000\data.csv"
     #file_path_adjtable = "C:\\Users\Handrail\Desktop\Manhattan Data\ZEROWALLFOURTHOUSAND\Adjtable.csv"
     
 
@@ -296,24 +297,24 @@ def main():
     # end_space.wall = False
 
 
-    print("Starting search")
-    start = time.time() # Start Timer
-    path, node_count  = astar_manhattan(start_space, end_space, space, width, height)
-    end =  time.time() # End Timer
-    total_time= end - start
-    print("Ending search")
+    # print("Starting search")
+    # start = time.time() # Start Timer
+    # path, node_count  = astar_manhattan(start_space, end_space, space, width, height)
+    # end =  time.time() # End Timer
+    # total_time= end - start
+    # print("Ending search")
 
 
-    if path:
-        print("Path:")
-        for node in path:
-            print(f"({node.xval}, {node.yval})")
-            print(f"Total path length: {len(path)-1}")
-            print(f"Total time taken: {total_time} seconds")
-            print(f"Nodes explored from openset: {node_count }")
-            save_data_manhattan(path, len(path)-1, total_time, node_count)
-    else:
-        print("No path found")
+    # if path:
+    #     print("Path:")
+    #     for node in path:
+    #         print(f"({node.xval}, {node.yval})")
+    #         print(f"Total path length: {len(path)-1}")
+    #         print(f"Total time taken: {total_time} seconds")
+    #         print(f"Nodes explored from openset: {node_count }")
+    #         save_data_manhattan(path, len(path)-1, total_time, node_count)
+    # else:
+    #     print("No path found")
 
 
     print("Starting search")
