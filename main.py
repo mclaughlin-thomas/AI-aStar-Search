@@ -12,12 +12,10 @@ Objective:
     of finding the shortest path to a user
     in a video game where edge weight indicates distance between nodes/states.
 '''
-import random
 import csv
 import gc
 import time
 import math
-import heapq
 from queue import PriorityQueue 
 
 
@@ -190,52 +188,6 @@ def astar_manhattan(start_space, end_space, space, width, height):
             neighbor.fval = neighbor.gval + neighbor.hval
 
     return None
-
-    # open_set = []
-    # path = []
-    # heapq.heappush(open_set, start_space)
-    # closed_set = set()
-
-    # node_counter = 0
-
-    # # Calculate the heuristic value for the goal once (assuming it's admissible)
-    # goal_heuristic = heuristic_manhattan(start_space, end_space)
-
-    # while open_set:
-    #     current = heapq.heappop(open_set)
-    #     node_counter += 1
-
-    #     if current == end_space:
-    #         path = []
-    #         temp = current
-    #         while temp:
-    #             path.append(temp)
-    #             temp = temp.previous
-    #         return path[::-1], node_counter
-
-    #     closed_set.add(current)
-
-    #     for neighbor in current.neighbors:
-    #         if neighbor in closed_set or neighbor.wall:
-    #             continue
-
-    #         tentative_gval = current.gval + 1
-
-    #         if neighbor not in open_set or tentative_gval < neighbor.gval:
-    #             neighbor.previous = current
-    #             neighbor.gval = tentative_gval
-    #             neighbor.hval = heuristic_manhattan(neighbor, end_space)
-    #             neighbor.fval = neighbor.gval + neighbor.hval
-
-    #             # Add tie-breaking based on lower g-value
-    #             tie_breaking_value = neighbor.gval
-
-    #             if neighbor not in open_set or (
-    #                 neighbor.fval, tie_breaking_value
-    #             ) < (goal_heuristic, current.gval):
-    #                 heapq.heappush(open_set, neighbor)
-
-    # return None
 
 def astar_euclidean(start_space, end_space, space, width, height):
     frontier = PriorityQueue()
