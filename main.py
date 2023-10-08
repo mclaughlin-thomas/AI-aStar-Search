@@ -17,6 +17,9 @@ import csv
 import gc
 import time
 import math
+import heapq
+from queue import PriorityQueue 
+
 
 
 class Node(object):
@@ -25,18 +28,18 @@ class Node(object):
     Task: Create nodes to be used in a graph
     Return: None
     """
-    def __init__(self, i, j):
+    def __init__(self, x, y):
         self.gval = 0
         self.hval = 0
         self.fval = 0
-        self.ival = i
-        self.jval = j
+        self.xval = x
+        self.yval = y
         self.neighbors = []
         self.previous = None
         self.wall = False
 
-        if random.randint(1, 100) < -1:
-            self.wall = True
+        # if random.randint(1, 100) < -1:
+        #     self.wall = True
 
     def add_neighbors(self, grid,width, height):
         """
@@ -44,25 +47,27 @@ class Node(object):
         Task: Create nodes to be used in a graph
         Return: None
         """
-        i = self.ival
-        j = self.jval
-        if i < width-1 :
-            self.neighbors.append(grid[i+1][j])
-        if i > 0:
-            self.neighbors.append(grid[i-1][j])
-        if j < height-1:
-            self.neighbors.append(grid[i][j+1])
-        if j>0:
-            self.neighbors.append(grid[i][j-1])
+        x = self.xval
+        y = self.yval
+        if x < width-1 :
+            self.neighbors.append(grid[x+1][y])
+        if x > 0:
+            self.neighbors.append(grid[x-1][y])
+        if y < height-1:
+            self.neighbors.append(grid[x][y+1])
+        if y>0:
+            self.neighbors.append(grid[x][y-1])
         #DIAGONALS
-        # if i> 0 and j>0:
-        #     self.neighbors.append(grid[i-1][j-1])
-        # if i < width -1 and j>0:
-        #     self.neighbors.append(grid[i+1][j-1])
-        # if i > 0 and j> height -1:
-        #     self.neighbors.append(grid[i-1][j+1])
-        # if i < width-1 and j < height-1:
-        #     self.neighbors.append(grid[i+1][j+1])
+        if x> 0 and y>0:
+            self.neighbors.append(grid[x-1][y-1])
+        if x < width -1 and y>0:
+            self.neighbors.append(grid[x+1][y-1])
+        if x > 0 and y> height -1:
+            self.neighbors.append(grid[x-1][y+1])
+        if x < width-1 and y < height-1:
+            self.neighbors.append(grid[x+1][y+1])
+    def __lt__(self, other):
+        return self.fval < other.fval
 
 
 def set_parameters():
@@ -84,62 +89,20 @@ def set_parameters():
         print("Invalid input. Please enter valid integers.")
         return set_parameters()  # calls fcn again if user inputs data wrong
 
-
-def user_generated_input():
-    """
-    Given: None
-    Task: Create nodes to be used in a graph
-    Return: None
-    """
-    dummy_tuple:int = ()
-    input_one = int(input())
-    input_two = int(input())
-    new_tuple = dummy_tuple +(input_one,input_two,)
-    return new_tuple
-
-
 def create_space(width, height):
     """
     Given: None
     Task: Create nodes to be used in a graph
     Return: None
     """
-    space = [0] * width
-    adjacency = {} 
-
-
-    for i in range(width): # entire space filled with 0's (No obstacles)
-        space[i] = [0] * height
-    print("Completed 0's\n")
+    space = [[Node(i, j) for j in range(width)] for i in range(height)]
     gc.collect()
 
-    for i in range(width): # entire space filled with Nodes as well
-        for j in range(height):
-            node = Node(i,j)
-            space[i][j] = node
-            adjacency[(i, j)] = []
-    print("Completed filling with nodes\n")
-    gc.collect()
-
-    for i in range(width): #initializing every node's neighbors
-        for j in range(height):
-            space[i][j].add_neighbors(space, width, height)
-            #gc.collect()
 
     print("Completed init neighbors's\n")
     gc.collect()
 
-    for i in range(width):  # initializing every node's neighbors
-        for j in range(height): 
-            node = space[i][j] 
-            for neighbor in node.neighbors: 
-                adjacency[(i, j)].append(((neighbor.ival, neighbor.jval), 1)) # PUT G COST HERE #NEW
-                #gc.collect()
-
-    print("Completed adj's\n")
-    gc.collect()
-
-    return space, adjacency
+    return space
 
 
 def remove_from_array (array, element):
@@ -153,126 +116,216 @@ def remove_from_array (array, element):
             array.pop(i)
 
 
-def heuristic(node_one, node_two):
+def heuristic_manhattan(node_one, node_two):
     """
     Given: None
     Task: Create nodes to be used in a graph
     Return: None
     """
-    distance = math.dist((node_one.ival, node_one.jval), (node_two.ival, node_two.jval)) #euclidian distance, if ur feelin it ig
-    # USE THIS IF U WANT TO ENABLE DIAGONAL
-    #distance = abs(node_one.ival-node_two.ival) + abs(node_one.jval-node_two.jval) #manhattan
+    distance = abs(node_one.xval-node_two.xval) + abs(node_one.yval-node_two.yval) #Manhattan
     return distance
+def heuristic_euclidean(node_one, node_two):
+    dx = node_one.xval - node_two.xval
+    dy = node_one.yval - node_two.yval
+    return math.sqrt(dx * dx + dy * dy)
+
+def reconstruct_path(came_from, start, goal):
+    current = goal
+    path = [current]
+    
+    while current != start:
+        current = came_from[current]
+        path.append(current)
+        
+    return list(reversed(path))
 
 
-def astar(start_space, end_space, adjacency):
-    """
-    Given: None
-    Task: Create nodes to be used in a graph
-    Return: None
-    """
-    path = []
-    open_set = []
-    closed_set = []
+def astar_manhattan(start_space, end_space, space, width, height):
+    frontier = PriorityQueue()
+    came_from = {}
+    cost_so_far = {}
+    cost_so_far[start_space] = 0
+    closed_set = set()
 
-    open_set.append(start_space)
+    node = start_space  
+    # Update start node's g, h, and f values
 
+    frontier.put((0, node))
 
-    while open_set:  # This loop will continue as long as openSet is not empty
-        winner = 0
+    opened_nodes = 0  # Initialize the counter for opened nodes
 
-        for i in range(len(open_set)): # Janky priority Queue | Room for improvement
-            if open_set[i].fval < open_set[winner].fval:
-                winner = i
-
-        current = open_set[winner]
-        print("Cur node's vals")
-        print(current.fval,"<-f ",current.hval,"<-h",current.gval,"<-g")###
-        print("\n")
-
-        if current == end_space:
-            # if we find it, relay path
-            path = []
-            temp = current
-            path.append(temp)
-            while temp.previous:
-                path.append(temp.previous)
-                temp = temp.previous
-            print("\n Done")
-            # Print the coordinates of the node
-            return path
-        remove_from_array(open_set, current)
-        closed_set.append(current)
-
-        neighbors = current.neighbors
-        for i in range(len(neighbors)):
-            #g value increases one going to each square
-            neighbor = neighbors[i]
-
-            # little search inside a search del me later
-            # IF ITS A NEIGHBOR thats not in the closed set del me later
-            if neighbor not in closed_set and not neighbor.wall:
-                 #Get the cost from the adjacency list based on the current and neighbor coordinates
-                cost = None
-                for neighbor_coord, adjacency_cost in adjacency[(current.ival, current.jval)]:
-                    if neighbor_coord == (neighbor.ival, neighbor.jval):
-                        cost = adjacency_cost
-                        break
-
-                if cost is not None:
-                    temp_g = current.gval + cost  # Add the cost from the adjacency list
+    while not frontier.empty():
+        _, popped_node = frontier.get()
+        print(popped_node.xval , " ", popped_node.yval)
+        popped_node.add_neighbors(space, width, height)
 
 
-                new_path = False
-                if neighbor in open_set:
-                    if temp_g<neighbor.gval:
-                        neighbor.gval = temp_g
-                        new_path = True
-                else:
-                    neighbor.gval = temp_g
-                    new_path = True
-                    open_set.append(neighbor)
+        if popped_node.xval == end_space.xval and popped_node.yval == end_space.yval:
+            print(f"nodes opened\n{opened_nodes}")
+            path  = reconstruct_path(came_from, start_space, popped_node)
+            return path, opened_nodes
+        closed_set.add(popped_node)
 
-                #heuristics
-                if new_path:
-                    neighbor.hval = heuristic(neighbor, end_space)
-                    neighbor.fval = neighbor.gval + neighbor.hval
-                    neighbor.previous = current
+        for neighbor in popped_node.neighbors:
+            print(f"Going through neighbor @ {neighbor.xval}, {neighbor.yval}")
+            if neighbor in closed_set:
+                print("This neighbor has already been explored! not doing that again!")
+                continue
+            newG = cost_so_far[popped_node] + 1
 
-    print("No solution")
-    return
+            if neighbor not in cost_so_far or newG < cost_so_far[neighbor]:
+                print("Adding stuff to frontier")
+                cost_so_far[neighbor] = newG
+                priority_f = newG + heuristic_manhattan(neighbor, end_space)
+                frontier.put((priority_f, neighbor))
+                came_from[neighbor] = popped_node
+                opened_nodes += 1
+
+        # Update neighbors' g, h, and f values
+        for neighbor in popped_node.neighbors:
+            if neighbor is None:
+                continue
+            neighbor.gval = cost_so_far[neighbor]
+            neighbor.hval = heuristic_manhattan(neighbor, end_space)
+            neighbor.fval = neighbor.gval + neighbor.hval
+
+    return None
+
+    # open_set = []
+    # path = []
+    # heapq.heappush(open_set, start_space)
+    # closed_set = set()
+
+    # node_counter = 0
+
+    # # Calculate the heuristic value for the goal once (assuming it's admissible)
+    # goal_heuristic = heuristic_manhattan(start_space, end_space)
+
+    # while open_set:
+    #     current = heapq.heappop(open_set)
+    #     node_counter += 1
+
+    #     if current == end_space:
+    #         path = []
+    #         temp = current
+    #         while temp:
+    #             path.append(temp)
+    #             temp = temp.previous
+    #         return path[::-1], node_counter
+
+    #     closed_set.add(current)
+
+    #     for neighbor in current.neighbors:
+    #         if neighbor in closed_set or neighbor.wall:
+    #             continue
+
+    #         tentative_gval = current.gval + 1
+
+    #         if neighbor not in open_set or tentative_gval < neighbor.gval:
+    #             neighbor.previous = current
+    #             neighbor.gval = tentative_gval
+    #             neighbor.hval = heuristic_manhattan(neighbor, end_space)
+    #             neighbor.fval = neighbor.gval + neighbor.hval
+
+    #             # Add tie-breaking based on lower g-value
+    #             tie_breaking_value = neighbor.gval
+
+    #             if neighbor not in open_set or (
+    #                 neighbor.fval, tie_breaking_value
+    #             ) < (goal_heuristic, current.gval):
+    #                 heapq.heappush(open_set, neighbor)
+
+    # return None
+
+def astar_euclidean(start_space, end_space, space, width, height):
+    frontier = PriorityQueue()
+    came_from = {}
+    cost_so_far = {}
+    cost_so_far[start_space] = 0
+    closed_set = set()
+
+    node = start_space  
+    # Update start node's g, h, and f values
+
+    frontier.put((0, node))
+
+    opened_nodes = 0  # Initialize the counter for opened nodes
+
+    while not frontier.empty():
+        _, popped_node = frontier.get()
+        print(popped_node.xval , " ", popped_node.yval)
+        popped_node.add_neighbors(space, width, height)
 
 
-def save_data(path, space, adjacency, i, total_time):
+        if popped_node.xval == end_space.xval and popped_node.yval == end_space.yval:
+            print(f"nodes opened\n{opened_nodes}")
+            return reconstruct_path(came_from, start_space, popped_node), opened_nodes
+        closed_set.add(popped_node)
+
+        for neighbor in popped_node.neighbors:
+            print(f"Going through neighbor @ {neighbor.xval}, {neighbor.yval}")
+            if neighbor in closed_set:
+                print("This neighbor has already been explored! not doing that again!")
+                continue
+            newG = cost_so_far[popped_node] + 1
+
+            if neighbor not in cost_so_far or newG < cost_so_far[neighbor]:
+                print("Adding stuff to frontier")
+                cost_so_far[neighbor] = newG
+                priority_f = newG + heuristic_euclidean(neighbor, end_space)
+                frontier.put((priority_f, neighbor))
+                came_from[neighbor] = popped_node
+                opened_nodes += 1
+
+        # Update neighbors' g, h, and f values
+        for neighbor in popped_node.neighbors:
+            if neighbor is None:
+                continue
+            neighbor.gval = cost_so_far[neighbor]
+            neighbor.hval = heuristic_euclidean(neighbor, end_space)
+            neighbor.fval = neighbor.gval + neighbor.hval
+
+    return False
+
+def save_data_euclidean(path, i, total_time, node_count):
     """
     Given: None
     Task: Create nodes to be used in a graph
     Return: Nonep
     """
-    # document = open("AI-Project1/algo_data.txt", "a", encoding="utf-8")
-    # document.write(f"{elapsed_time}\n") # had to make it one argument
-    # document.close()
     #file_path_results = "AI-Project1\Manhattan Data\ZEROWALLTWELVETHOUSAND\data.csv"
-    file_path_results = "C:\\Users\Handrail\Desktop\Euclidean Data.NODIAG\ZEROWALLONETHOUSAND\data.csv"
+    file_path_results = "C:\\Users\Handrail\Desktop\Euclidean Data.NODIAG\ZEROWALLTEN\data.csv"
     #file_path_adjtable = "C:\\Users\Handrail\Desktop\Manhattan Data\ZEROWALLFOURTHOUSAND\Adjtable.csv"
-    #file_path_space = "C:\\Users\Handrail\Desktop\Manhattan Data\ZEROWALLFOURTHOUSAND\Space.csv"
-    # adj_str = repr(adjacency)
-    # space_str = repr(space)
-
+    
 
     with open(file_path_results, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         # Use writerow to write the header (if any) and data rows
         for node in reversed(path):
-            writer.writerow([node.ival, node.jval])
+            writer.writerow([node.xval, node.yval])
         writer.writerow(["total states(including start and goal)", i])
         writer.writerow(["Time for Astar", total_time])
+        writer.writerow(["Nodes opened", node_count])
 
-    # with open(file_path_adjtable, mode='w', encoding='utf-8') as file:
-    #     file.write(adj_str)
+def save_data_manhattan(path, i, total_time, node_count):
+    """
+    Given: None
+    Task: Create nodes to be used in a graph
+    Return: Nonep
+    """
+    #file_path_results = "AI-Project1\Manhattan Data\ZEROWALLTWELVETHOUSAND\data.csv"
+    file_path_results = "C:\\Users\Handrail\Desktop\Euclidean Data.NODIAG\ZEROWALLTWOTHOUSAND\data.csv"
+    #file_path_adjtable = "C:\\Users\Handrail\Desktop\Manhattan Data\ZEROWALLFOURTHOUSAND\Adjtable.csv"
+    
 
-    # with open(file_path_space, mode='w', encoding='utf-8') as file:
-    #     file.write(space_str)
+    with open(file_path_results, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        # Use writerow to write the header (if any) and data rows
+        for node in reversed(path):
+            writer.writerow([node.xval, node.yval])
+        writer.writerow(["total states(including start and goal)", i])
+        writer.writerow(["Time for Astar", total_time])
+        writer.writerow(["Nodes opened", node_count])
 
 
 
@@ -284,16 +337,16 @@ def main():
     Return: None
     """
     width, height = set_parameters()
-    space, adjacency = create_space(width, height)
-    start_space = space[0][0]
+    space = create_space(width, height)
+    start_space = space[0][0]    
     end_space = space[width-1][height-1]
-    start_space.wall = False
-    end_space.wall = False
+    # start_space.wall = False
+    # end_space.wall = False
 
 
     print("Starting search")
     start = time.time() # Start Timer
-    path = astar(start_space, end_space, adjacency)
+    path, node_count  = astar_manhattan(start_space, end_space, space, width, height)
     end =  time.time() # End Timer
     total_time= end - start
     print("Ending search")
@@ -301,11 +354,32 @@ def main():
 
     if path:
         print("Path:")
-        i =0
-        for node in reversed(path):
-            print(f"({node.ival}, {node.jval})")
-            i=i+1
-        save_data(path, space, adjacency, i, total_time)
+        for node in path:
+            print(f"({node.xval}, {node.yval})")
+            print(f"Total path length: {len(path)-1}")
+            print(f"Total time taken: {total_time} seconds")
+            print(f"Nodes explored from openset: {node_count }")
+            save_data_manhattan(path, len(path)-1, total_time, node_count)
+    else:
+        print("No path found")
+
+
+    print("Starting search")
+    start = time.time() # Start Timer
+    path, node_count  = astar_euclidean(start_space, end_space, space, width, height)
+    end =  time.time() # End Timer
+    total_time= end - start
+    print("Ending search")
+
+
+    if path:
+        print("Path:")
+        for node in path:
+            print(f"({node.xval}, {node.yval})")
+            print(f"Total path length: {len(path)-1}")
+            print(f"Total time taken: {total_time} seconds")
+            print(f"Nodes explored from openset: {node_count }")
+            save_data_euclidean(path, len(path)-1, total_time, node_count)
     else:
         print("No path found")
 
