@@ -247,7 +247,7 @@ def save_data_euclidean(path, i, total_time, node_count):
     Return: Nonep
     """
     #file_path_results = "AI-Project1\Manhattan Data\ZEROWALLTWELVETHOUSAND\data.csv"
-    file_path_results = "C:\\Users\Handrail\Documents\Project 1\Euclidean\hNoWalls\hNoDiag\h4000\data.csv"
+    file_path_results = "C:\\Users\Handrail\Documents\Project 1\Euclidean\hNoWalls\hNoDiag\h2500\data.csv"
     #file_path_adjtable = "C:\\Users\Handrail\Desktop\Manhattan Data\ZEROWALLFOURTHOUSAND\Adjtable.csv"
     
 
@@ -267,7 +267,7 @@ def save_data_manhattan(path, i, total_time, node_count):
     Return: Nonep
     """
     #file_path_results = "AI-Project1\Manhattan Data\ZEROWALLTWELVETHOUSAND\data.csv"
-    file_path_results = "C:\\Users\Handrail\Documents\Project 1\Manhattan\hNoWalls\hNoDiag\h4000\data.csv"
+    file_path_results = "C:\\Users\Handrail\Documents\Project 1\Manhattan\hNoWalls\hNoDiag\h2500\data.csv"
     #file_path_adjtable = "C:\\Users\Handrail\Desktop\Manhattan Data\ZEROWALLFOURTHOUSAND\Adjtable.csv"
     
 
@@ -297,22 +297,22 @@ def main():
     # end_space.wall = False
 
 
-    # print("Starting search")
+    # print("\nStarting search\n")
     # start = time.time() # Start Timer
     # path, node_count  = astar_manhattan(start_space, end_space, space, width, height)
     # end =  time.time() # End Timer
     # total_time= end - start
-    # print("Ending search")
+    # print("\nEnding search\n")
 
 
     # if path:
-    #     print("Path:")
+    #     print("Path:\n")
     #     for node in path:
     #         print(f"({node.xval}, {node.yval})")
-    #         print(f"Total path length: {len(path)-1}")
-    #         print(f"Total time taken: {total_time} seconds")
-    #         print(f"Nodes explored from openset: {node_count }")
-    #         save_data_manhattan(path, len(path)-1, total_time, node_count)
+    #     print(f"Total path length: {len(path)-1}")
+    #     print(f"Total time taken: {total_time} seconds")
+    #     print(f"Nodes explored from openset: {node_count }")
+    #     save_data_manhattan(path, len(path)-1, total_time, node_count)
     # else:
     #     print("No path found")
 
@@ -329,10 +329,10 @@ def main():
         print("Path:")
         for node in path:
             print(f"({node.xval}, {node.yval})")
-            print(f"Total path length: {len(path)-1}")
-            print(f"Total time taken: {total_time} seconds")
-            print(f"Nodes explored from openset: {node_count }")
-            save_data_euclidean(path, len(path)-1, total_time, node_count)
+        print(f"Total path length: {len(path)-1}")
+        print(f"Total time taken: {total_time} seconds")
+        print(f"Nodes explored from openset: {node_count }")
+        save_data_euclidean(path, len(path)-1, total_time, node_count)
     else:
         print("No path found")
 
