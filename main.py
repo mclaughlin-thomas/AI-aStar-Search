@@ -253,7 +253,6 @@ def save_data_euclidean(path, i, total_time, node_count):
 
     with open(file_path_results, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        # Use writerow to write the header (if any) and data rows
         for node in reversed(path):
             writer.writerow([node.xval, node.yval])
         writer.writerow(["total states(including start and goal)", i])
