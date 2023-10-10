@@ -4,8 +4,22 @@ import math
 import random
 from queue import PriorityQueue
 
-#import pygame
+import pygame
+# Constants for visualization
+GRID_SIZE = 20
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
 
+# Initialize Pygame
+# pylint: disable=no-member
+#pygame.init()
+
+#screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+#pygame.display.set_caption("A* Pathfinding Visualization")
 
 
 class Node(object):
