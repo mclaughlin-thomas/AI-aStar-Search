@@ -1,9 +1,10 @@
-import csv
 import gc
 import time
 import math
 import random
 from queue import PriorityQueue
+
+#import pygame
 
 
 
@@ -25,7 +26,7 @@ class Node(object):
         self.diagonal_moves = diagonal_moves  # Added parameter for diagonal moves
 
 
-        if random.randint(1, 100) < 11:
+        if random.randint(1, 100) < -1:
             self.wall = True
 
     def add_neighbors(self, grid,width, height):
@@ -95,25 +96,11 @@ def create_space(width, height, diag):
     Return: None
     """
     space = [[Node(i, j, diag) for j in range(width)] for i in range(height)]
-    gc.collect()
+    gc.collect() # the coding equivalent of when you get a stimmy check 
 
 
     print("Completed init neighbors's\n")
-    gc.collect()
-
     return space
-
-
-def remove_from_array (array, element):
-    """
-    Given: None
-    Task: Create nodes to be used in a graph
-    Return: None
-    """
-    for i in range(len(array) - 1, -1, -1):
-        if array[i] == element:
-            array.pop(i)
-
 
 def heuristic_manhattan(node_one, node_two):
     """
@@ -139,65 +126,7 @@ def reconstruct_path(came_from, start, goal):
        
     return list(reversed(path))
 
-#SEARCHES START
-#---------------------------------------
-
-#ALLOW DIAG| MAN, EUC |START
-def astar_manhattan(start_space, end_space, space, width, height):
-    frontier = PriorityQueue()
-    came_from = {}
-    cost_so_far = {}
-    cost_so_far[start_space] = 0
-    closed_set = set()
-
-    node = start_space  
-    # Update start node's g, h, and f values
-
-    frontier.put((0, node))
-
-    opened_nodes = 0  # Initialize the counter for opened nodes
-
-    while not frontier.empty():
-        _, popped_node = frontier.get()
-        print(popped_node.xval , " ", popped_node.yval)
-        popped_node.add_neighbors(space, width, height)
-
-
-        if popped_node.xval == end_space.xval and popped_node.yval == end_space.yval:
-            print(f"nodes opened\n{opened_nodes}")
-            path  = reconstruct_path(came_from, start_space, popped_node)
-            return path, opened_nodes
-        closed_set.add(popped_node)
-
-        for neighbor in popped_node.neighbors:
-            print(f"Going through neighbor @ {neighbor.xval}, {neighbor.yval}")
-            if neighbor.wall:
-                print("This neighbor is a wall, skipping!")
-                continue
-            if neighbor in closed_set:
-                print("This neighbor has already been explored! not doing that again!")
-                continue
-            newG = cost_so_far[popped_node] + 1
-
-            if neighbor not in cost_so_far or newG < cost_so_far[neighbor]:
-                print("Adding stuff to frontier")
-                cost_so_far[neighbor] = newG
-                priority_f = newG + heuristic_manhattan(neighbor, end_space)
-                frontier.put((priority_f, neighbor))
-                came_from[neighbor] = popped_node
-                opened_nodes += 1
-
-        # Update neighbors' g, h, and f values
-        for neighbor in popped_node.neighbors:
-            if neighbor.wall is True:
-                continue
-            neighbor.gval = cost_so_far[neighbor]
-            neighbor.hval = heuristic_euclidean(neighbor, end_space)
-            neighbor.fval = neighbor.gval + neighbor.hval
-
-    return None
-
-def astar_euclidean(start_space, end_space, space, width, height):
+def astar(start_space, end_space, space, width, height):
     frontier = PriorityQueue()
     came_from = {}
     cost_so_far = {}
@@ -235,7 +164,7 @@ def astar_euclidean(start_space, end_space, space, width, height):
             if neighbor not in cost_so_far or newG < cost_so_far[neighbor]:
                 print("Adding stuff to frontier")
                 cost_so_far[neighbor] = newG
-                priority_f = newG + heuristic_euclidean(neighbor, end_space)
+                priority_f = newG + heuristic_manhattan(neighbor, end_space)
                 frontier.put((priority_f, neighbor))
                 came_from[neighbor] = popped_node
                 opened_nodes += 1
@@ -245,100 +174,10 @@ def astar_euclidean(start_space, end_space, space, width, height):
             if neighbor.wall is True:
                 continue
             neighbor.gval = cost_so_far[neighbor]
-            neighbor.hval = heuristic_euclidean(neighbor, end_space)
+            neighbor.hval = heuristic_manhattan(neighbor, end_space)
             neighbor.fval = neighbor.gval + neighbor.hval
 
     return False
-#ALLOW DIAG| MAN, EUC |END
-
-
-
-
-#SAVE DATA START
-#---------------------------------------
-
-def save_data_euclidean_diag(path, i, total_time, node_count):
-    """
-    Given: None
-    Task: Create nodes to be used in a graph
-    Return: Nonep
-    """
-    #file_path_results = "AI-Project1\Manhattan Data\ZEROWALLTWELVETHOUSAND\data.csv"
-    file_path_results = "C:\\Users\mclaught\Documents\Wall\Euc\Diag\hr2\h8000\data.csv"
-    #file_path_adjtable = "C:\\Users\Handrail\Desktop\Manhattan Data\ZEROWALLFOURTHOUSAND\Adjtable.csv"
-   
-
-    with open(file_path_results, mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        # Use writerow to write the header (if any) and data rows
-        for node in reversed(path):
-            writer.writerow([node.xval, node.yval])
-        writer.writerow(["total states(including start and goal)", i])
-        writer.writerow(["Time for Astar", total_time])
-        writer.writerow(["Nodes opened", node_count])
-
-def save_data_manhattan_diag(path, i, total_time, node_count):
-    """
-    Given: None
-    Task: Create nodes to be used in a graph
-    Return: Nonep
-    """
-    #file_path_results = "AI-Project1\Manhattan Data\ZEROWALLTWELVETHOUSAND\data.csv"
-    file_path_results = "C:\\Users\mclaught\Documents\Wall\Man\Diag\hr2\h8000\data.csv"
-    #file_path_adjtable = "C:\\Users\Handrail\Desktop\Manhattan Data\ZEROWALLFOURTHOUSAND\Adjtable.csv"
-   
-
-    with open(file_path_results, mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        # Use writerow to write the header (if any) and data rows
-        for node in reversed(path):
-            writer.writerow([node.xval, node.yval])
-        writer.writerow(["total states(including start and goal)", i])
-        writer.writerow(["Time for Astar", total_time])
-        writer.writerow(["Nodes opened", node_count])
-
-def save_data_euclidean_noDiag(path, i, total_time, node_count):
-    """
-    Given: None
-    Task: Create nodes to be used in a graph
-    Return: Nonep
-    """
-    #file_path_results = "AI-Project1\Manhattan Data\ZEROWALLTWELVETHOUSAND\data.csv"
-    file_path_results = "C:\\Users\mclaught\Documents\Wall\Euc\hNoDiag\hr2\h8000\data.csv"
-   
-    #file_path_adjtable = "C:\\Users\Handrail\Desktop\Manhattan Data\ZEROWALLFOURTHOUSAND\Adjtable.csv"
-   
-
-    with open(file_path_results, mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        # Use writerow to write the header (if any) and data rows
-        for node in reversed(path):
-            writer.writerow([node.xval, node.yval])
-        writer.writerow(["total states(including start and goal)", i])
-        writer.writerow(["Time for Astar", total_time])
-        writer.writerow(["Nodes opened", node_count])
-def save_data_manhattan_noDiag(path, i, total_time, node_count):
-    """
-    Given: None
-    Task: Create nodes to be used in a graph
-    Return: Nonep
-    """
-    #file_path_results = "AI-Project1\Manhattan Data\ZEROWALLTWELVETHOUSAND\data.csv"
-    file_path_results = "C:\\Users\mclaught\Documents\Wall\Man\hNoDiag\hr2\h8000\data.csv"
-    #file_path_adjtable = "C:\\Users\Handrail\Desktop\Manhattan Data\ZEROWALLFOURTHOUSAND\Adjtable.csv"
-   
-
-    with open(file_path_results, mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        # Use writerow to write the header (if any) and data rows
-        for node in reversed(path):
-            writer.writerow([node.xval, node.yval])
-        writer.writerow(["total states(including start and goal)", i])
-        writer.writerow(["Time for Astar", total_time])
-        writer.writerow(["Nodes opened", node_count])
-#---------------------------------------
-#SAVE DATA END
-
 
 
 def main():
@@ -358,10 +197,13 @@ def main():
     start_space.wall = False
     end_space.wall = False
 
+    #uncomment to disable diagonal after a run if you have multiple
+    #disable_diagonal_moves(space)
+
     #DIAGONALS MAN AND EUC START
     print("\nStarting search\n")
     start = time.time() # Start Timer
-    path, node_count  = astar_manhattan(start_space, end_space, space, width, height)
+    path, node_count  = astar(start_space, end_space, space, width, height)
     end =  time.time() # End Timer
     total_time= end - start
     print(total_time)
@@ -375,74 +217,6 @@ def main():
         print(f"Total path length: {len(path)-1}")
         print(f"Total time taken: {total_time} seconds")
         print(f"Nodes explored from openset: {node_count }")
-        save_data_manhattan_diag(path, len(path)-1, total_time, node_count)
-    else:
-        print("No path found")
-
-
-    print("Starting search")
-    start1 = time.time() # Start Timer
-    path, node_count  = astar_euclidean(start_space, end_space, space, width, height)
-    end1 =  time.time() # End Timer
-    total_time1= end1 - start1
-    print(total_time1)
-    print("Ending search")
-
-
-    if path:
-        print("Path:")
-        for node in path:
-            print(f"({node.xval}, {node.yval})")
-        print(f"Total path length: {len(path)-1}")
-        print(f"Total time taken: {total_time1} seconds")
-        print(f"Nodes explored from openset: {node_count }")
-        save_data_euclidean_diag(path, len(path)-1, total_time1, node_count)
-    else:
-        print("No path found")
-       
-#DIAGONALS MAN AND EUC END
-
-    disable_diagonal_moves(space)
-
-#NO DIAG MAN AND EUC START
-    print("\nStarting search\n")
-    start2 = time.time() # Start Timer
-    path, node_count  = astar_manhattan(start_space, end_space, space, width, height)
-    end2 =  time.time() # End Timer
-    total_time2= end2 - start2
-    print(total_time2)
-    print("\nEnding search\n")
-
-
-    if path:
-         print("Path:\n")
-         for node in path:
-             print(f"({node.xval}, {node.yval})")
-         print(f"Total path length: {len(path)-1}")
-         print(f"Total time taken: {total_time2} seconds")
-         print(f"Nodes explored from openset: {node_count }")
-         save_data_manhattan_noDiag(path, len(path)-1, total_time2, node_count)
-    else:
-         print("No path found")
-
-
-    print("Starting search")
-    start3 = time.time() # Start Timer
-    path, node_count  = astar_euclidean(start_space, end_space, space, width, height)
-    end3 =  time.time() # End Timer
-    total_time3= end3 - start3
-    print(total_time3)
-    print("Ending search")
-
-
-    if path:
-        print("Path:")
-        for node in path:
-            print(f"({node.xval}, {node.yval})")
-        print(f"Total path length: {len(path)-1}")
-        print(f"Total time taken: {total_time3} seconds")
-        print(f"Nodes explored from openset: {node_count }")
-        save_data_euclidean_noDiag(path, len(path)-1, total_time3, node_count)
     else:
         print("No path found")
 
