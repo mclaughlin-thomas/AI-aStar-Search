@@ -6,7 +6,7 @@ REQUIREMENTS:
 -It is possible to alter the start state and goal state; however, when choosing the grid width and height the values must be the same i.e., width = 40, height=40.
 
 CAPABILITIES:
--This program can perform A* with Manhattan or Euclidean heuristics. You can alter which heuristics function is called in the "astar" functionon on lines 262 and 272 by calling whicher heuristics function you prefer
+-This program can perform A* with Manhattan or Euclidean heuristics. You can alter which heuristics function is called in the "astar" functionon on lines 262 and 272 by calling whicher heuristics function you prefer.
 
       -"heuristic_manhattan"  for Manhattan heuristics
       -"heuristic_euclidean"  forEuclidean heuristics
