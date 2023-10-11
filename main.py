@@ -39,8 +39,8 @@ PATHCOLOR = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 #COLORS
-screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)) # Set the screen size
-pygame.display.set_caption("A* Visualization | Erapigliasay Edition") # Set the window title
+screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)) # Sets the size of screen
+pygame.display.set_caption("A* Visualization | Erapigliasay Edition") # Sets the title of popout window
 #BOILER PLATE VISUALIZATION CODE
 
 
