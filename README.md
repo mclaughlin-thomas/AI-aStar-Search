@@ -7,8 +7,10 @@ REQUIREMENTS:
 
 CAPABILITIES:
 -This program can perform A* with Manhattan or Euclidean heuristics. You can alter which heuristics function is called in the "astar" functionon on lines 262 and 272 by calling whicher heuristics function you prefer
+
       -"heuristic_manhattan"  for Manhattan heuristics
       -"heuristic_euclidean"  forEuclidean heuristics
+      
 -Diagonal movement can also be enabled/disabled. To disable diagonal movement, make Diag=False. To enable diagonal movement, make Diag=True.
 -Wall/obstacles can also be enabled/disabled, as well as percent increase or decrease. To enable obstacles/walls within the search space, on line 35, make XXXXX be greater than 0 and to your desired liklihood of the node becoming a wall. To disable obstacles/walls within the search space, on line 35, make XXXXX be less than or equal to 0. When creating the search space full of nodes, each nodes then have a percentage liklihood of themselves becoming a wall, below is that funciton: this is not a traditional maze.
           
