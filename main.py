@@ -22,15 +22,13 @@ import gc
 import random
 from queue import PriorityQueue
 import sys
-# pylint: disable=no-member
 import pygame
-#thats for my linter, it doesnt like pygame for some reason aiden just a heads
 
-#BOILER PLATE VISUALIZATION CODE
+# BOILER PLATE VISUALIZATION CODE
 GRID_SIZE = 20
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
-#COLORS
+# COLORS
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 CLOSEDSETCOLOR = (200, 200, 200)
@@ -38,11 +36,13 @@ FRONTIERCOLOR = (100, 100, 100)
 PATHCOLOR = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
-#COLORS
+# COLORS
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)) # Sets the size of screen
 pygame.display.set_caption("A* Visualization | Erapigliasay Edition") # Sets the title of popout window
-#BOILER PLATE VISUALIZATION CODE
+# BOILER PLATE VISUALIZATION CODE
 
+WALL_PROBABILITY = 30
+# WALL_PROBABILITY = 0
 
 
 class Node(object):
@@ -63,7 +63,7 @@ class Node(object):
         self.diagonal_moves = diagonal_moves  # Added parameter for diagonal moves
 
 
-        if random.randint(1, 100) < -10:
+        if random.randint(1, 100) < WALL_PROBABILITY:
             self.wall = True
 
     def add_neighbors(self, grid,width, height):
@@ -98,7 +98,6 @@ class Node(object):
         Task: Compare nodes
         Return: True/False
         """
-        #literally only here so the priority queue works and so i can sleep at night
         return self.fval < other.fval
 
 
@@ -119,7 +118,7 @@ def set_parameters():
         return width, height
     except ValueError:
         print("Invalid input. Please enter valid integers.")
-        return set_parameters()  # calls fcn again if user inputs data wrong
+        return set_parameters()  # Calls fcn again if user inputs data wrong
 
 def disable_diagonal_moves(space):
     """
@@ -139,7 +138,7 @@ def create_space(width, height, diag):
     Return: Space
     """
     space = [[Node(i, j, diag) for j in range(width)] for i in range(height)]
-    gc.collect() # clean up and deallocate memory no longer in use
+    gc.collect() # Clean up and deallocate memory no longer in use
 
 
     print("Completed init neighbors's\n")
@@ -151,7 +150,7 @@ def heuristic_manhattan(node_one, node_two):
     Task: Calculate the Manhattan distance between given nodes
     Return: The Manhattan distance between node_one and node_two
     """
-    distance = abs(node_one.xval-node_two.xval) + abs(node_one.yval-node_two.yval) #Manhattan
+    distance = abs(node_one.xval-node_two.xval) + abs(node_one.yval-node_two.yval)
     return distance
 
 def heuristic_euclidean(node_one, node_two):
@@ -281,24 +280,22 @@ def main():
     Task: Run the A* algorithm and display the results
     Return: None
     """
-    # pylint: disable=no-member
-    #pygame.init()
 
-    #TRUE FOR DIAGONAL
-    #FALSE FOR NODIAG
+    # TRUE FOR DIAGONAL
+    # FALSE FOR NODIAG
     diag = True
 
     width, height = set_parameters()
     space = create_space(width, height, diag)
     screen = pygame.display.set_mode((width * GRID_SIZE, height * GRID_SIZE))
-    gc.collect() # clean up and deallocate memory no longer in use
+    gc.collect() # Clean up and deallocate memory no longer in use
 
     start_space = space[0][0]    
     end_space = space[width-1][height-1]
     start_space.wall = False
     end_space.wall = False
 
-    #uncomment to disable diagonal after a run if you have multiple
+    # Uncomment to disable diagonal after a run if you have multiple
     #disable_diagonal_moves(space)
 
     print("\nStarting search\n")
