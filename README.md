@@ -23,68 +23,12 @@ ISSUES:
 -If the visuals from pygame struggle to load, you can dissable the grid lines on lines 213, 217,219,224,229, and 245. This WILL result in the gridlines going away.
 
 INSTRUCTIONS:
--Install pygame and all other dependencies
--Run
--Input width and height for state space (remember, must be the same height and width)
--Let the state space be created. (All nodes default path cost of 1)
--View popout window and watch A* in action
+- Install pygame and all other dependencies
+- Run
+- Let the state space be created. (All nodes default path cost of 1)
+- View popout window and watch A* in action
 
 INTERPRET DATA:
 -You can view the pygame popout to see in realtime how the algorithm works
       - You can slow down the progression of the algorithm by increasing the sleep on line 235
 -In the terminal you can see the current node, neighbors/adjacent states it is aware of from the current state, and the shortest path.
-
-BENCHMARKING:
-- Time was calculated using the python time library
-- Memory was calcualted using the python tracemalloc library
-
-DATASET:
-- Data set contains 2 replicates of each measurement averaged
-- NO WALLS
-  
-          -Euclidean no diagonal-
-              -100 states
-              -10000 states
-              -1000000 states
-              -4000000 states
-          -Manhattan no diagonal-
-              -100 states
-              -10000 states
-              -1000000 states
-              -4000000 states
-        -Euclidean diagonal-
-              -100 states
-              -10000 states
-              -1000000 states
-              -4000000 states
-        -Manhattan diagonal-
-              -100 states
-              -10000 states
-              -1000000 states
-              -4000000 states
--WALLS (10%)   
-
-        -Euclidean diagonal-
-              -100 states
-              -10000 states
-              -1000000 states
-              -4000000 states
-              -90250000 states
-        -Manhattan diagonal-
-              -100 states
-              -10000 states
-              -1000000 states
-              -4000000 states
-              -90250000 states
-        -Euclidean no diagonal-
-              -100 states
-              -10000 states
-              -1000000 states
-              -4000000 states
-              -90250000 states
-        -Manhattan no diagonal-
-              -100 states
-              -10000 states
-              -1000000 states
-              -4000000 states
-              -90250000 states
