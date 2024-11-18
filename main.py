@@ -17,6 +17,7 @@ Objective:
 '''
 
 import time
+from time import sleep
 import math
 import gc
 import random
@@ -25,7 +26,7 @@ import sys
 import pygame
 
 # BOILER PLATE VISUALIZATION CODE
-GRID_SIZE = 20
+GRID_SIZE = 30
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 # COLORS
@@ -38,11 +39,10 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 # COLORS
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)) # Sets the size of screen
-pygame.display.set_caption("A* Visualization | Erapigliasay Edition") # Sets the title of popout window
+pygame.display.set_caption("A* Visualization") # Sets the title of popout window
 # BOILER PLATE VISUALIZATION CODE
 
 WALL_PROBABILITY = 30
-# WALL_PROBABILITY = 0
 
 
 class Node(object):
@@ -101,25 +101,6 @@ class Node(object):
         return self.fval < other.fval
 
 
-def set_parameters():
-    """
-    Given: None
-    Task: Take user input to be used in Space
-    Return: width, height
-    """
-    try:
-        width = int(input("Enter the width of the graph: "))
-        height = int(input("Enter the height of the graph: "))
-
-        is_valid = True if width <= 0 or height <= 0 else False
-        if is_valid is True:
-            print("Number too small. Try again.\n\n")
-            set_parameters()
-        return width, height
-    except ValueError:
-        print("Invalid input. Please enter valid integers.")
-        return set_parameters()  # Calls fcn again if user inputs data wrong
-
 def disable_diagonal_moves(space):
     """
     Given: A graph of nodes
@@ -140,8 +121,6 @@ def create_space(width, height, diag):
     space = [[Node(i, j, diag) for j in range(width)] for i in range(height)]
     gc.collect() # Clean up and deallocate memory no longer in use
 
-
-    print("Completed init neighbors's\n")
     return space
 
 def heuristic_manhattan(node_one, node_two):
@@ -192,11 +171,8 @@ def astar(start_space, end_space, space, width, height, screen):
     closed_set = set()
 
     node = start_space
-
     frontier.put((0, node))
-
     opened_nodes = 0  # Initialize the counter for opened nodes
-
 
     while not frontier.empty():
         _, popped_node = frontier.get()
@@ -229,7 +205,6 @@ def astar(start_space, end_space, space, width, height, screen):
 
         # Update display
         pygame.display.flip()
-
         # Stagger what we see on the popup screen
         time.sleep(0.2)
 
@@ -285,13 +260,14 @@ def main():
     # FALSE FOR NODIAG
     diag = True
 
-    width, height = set_parameters()
-    space = create_space(width, height, diag)
-    screen = pygame.display.set_mode((width * GRID_SIZE, height * GRID_SIZE))
+    widthHeight = 15
+
+    space = create_space(widthHeight, widthHeight, diag)
+    screen = pygame.display.set_mode((widthHeight * GRID_SIZE, widthHeight * GRID_SIZE))
     gc.collect() # Clean up and deallocate memory no longer in use
 
     start_space = space[0][0]    
-    end_space = space[width-1][height-1]
+    end_space = space[widthHeight-1][widthHeight-1]
     start_space.wall = False
     end_space.wall = False
 
@@ -300,12 +276,11 @@ def main():
 
     print("\nStarting search\n")
     start = time.time() # Start Timer
-    path, node_count = astar(start_space, end_space, space, width, height, screen) # Run A* algo
+    path, node_count = astar(start_space, end_space, space, widthHeight, widthHeight, screen) # Run A* algo
     end =  time.time() # End Timer
     total_time= end - start
     print(total_time)
     print("\nEnding search\n")
-
 
     if path:
         print("Path:\n")
@@ -316,7 +291,6 @@ def main():
         print(f"Nodes explored from openset: {node_count +1}")
     else:
         print("No path found")
-
 
     # This will make the window stay up even after its done
     while True:
