@@ -10,22 +10,19 @@ Pygame is required for the visuals.
 pip install pygame
 ```
 
-
 ## CAPABILITIES:
--This program can perform A* with Manhattan or Euclidean heuristics. You can alter which heuristics function is called in the "astar" functionon on lines 262 and 272 by calling whicher heuristics function you prefer.
+- This program can perform A* with Manhattan or Euclidean heuristics. You can alter which heuristics function is called in the "astar" functionon on lines 236 and 246 by calling whicher heuristics function you prefer.
 
       -"heuristic_manhattan"  for Manhattan heuristics
       -"heuristic_euclidean"  forEuclidean heuristics
       
--Diagonal movement can also be enabled/disabled. To disable diagonal movement, make Diag=False. To enable diagonal movement, make Diag=True.
+- Diagonal movement can also be enabled/disabled. To disable diagonal movement, make Diag=False. To enable diagonal movement, make Diag=True.
 
--Wall/obstacles can also be enabled/disabled, as well as percent increase or decrease. To enable obstacles/walls within the search space, on line 35, make WALL_PROBABILITY be greater than 0 and to your desired liklihood of the node becoming a wall. To disable obstacles/walls within the search space, on line 35, make WALL_PROBABILITY be less than or equal to 0. When creating the search space full of nodes, each nodes then have a percentage liklihood of themselves becoming a wall, below is that funciton: this is not a traditional maze.
+- Wall/obstacles can also be enabled/disabled, as well as percent increase or decrease. To enable obstacles/walls within the search space, on line 45, make WALL_PROBABILITY be greater than 0 and to your desired liklihood of the node becoming a wall. To disable obstacles/walls within the search space, on line 45, make WALL_PROBABILITY be less than or equal to 0. When creating the search space full of nodes, each nodes then have a percentage liklihood of themselves becoming a wall, below is that funciton: this is not a traditional maze.
           
           if random.randint(1, 100) < WALL_PROBABILITY:
             self.wall = True
             
-## ISSUES:
--If the visuals from pygame struggle to load, you can dissable the grid lines on lines 213, 217,219,224,229, and 245. This WILL result in the gridlines going away.
 
 ## INSTRUCTIONS:
 - Install pygame and all other dependencies
