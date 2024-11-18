@@ -1,6 +1,8 @@
 ﻿# AI-aStar-Search
 This program creates a perfectly square search space based off the users input and performs numerous variations of A* with different heuristics displayed visually using pygame.
 
+<img src="search.gif" alt="search" />
+
 REQUIREMENTS: 
 -Pygame is required for the visuals. Pygame can be installed with the command "pip install pygame".
 -It is possible to alter the start state and goal state; however, when choosing the grid width and height the values must be the same i.e., width = 40, height=40.
